@@ -6,8 +6,14 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs { inherit system; };
 
@@ -24,6 +30,7 @@
 
           # Helpful general tools
           pkgs.git
+          pkgs.nil
           pkgs.gnumake
         ];
 
@@ -59,9 +66,12 @@
           # Competitive programming oriented.
           cp = pkgs.mkShell {
             name = "hs-cp";
-            packages = commonTools ++ cpLibs ++ [
-              pkgs.python3 # sometimes useful for generators/checkers
-            ];
+            packages =
+              commonTools
+              ++ cpLibs
+              ++ [
+                pkgs.python3 # sometimes useful for generators/checkers
+              ];
 
             shellHook = ''
               echo "Haskell CP shell: ghc=$(ghc --numeric-version)"
@@ -73,5 +83,6 @@
           # Default shell if you do `nix develop`
           default = self.devShells.${system}.research;
         };
-      });
+      }
+    );
 }
